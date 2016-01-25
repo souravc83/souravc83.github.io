@@ -149,19 +149,19 @@ Paul_plot &lt;span class="o"&gt;=&lt;/span&gt; candidate_plot&lt;span class="p"&
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-4" src="souravc83.github.io/figure/unnamed-chunk-4-1.png" /&gt; &lt;/p&gt;
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-4" src="http://souravc83.github.io/figure/unnamed-chunk-4-1.png" /&gt; &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;Romney_plot &lt;span class="o"&gt;=&lt;/span&gt; candidate_plot&lt;span class="p"&gt;(&lt;/span&gt;poll_raw&lt;span class="p"&gt;,&lt;/span&gt; actual&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Romney&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;Romney_plot&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-4" src="souravc83.github.io/figure/unnamed-chunk-4-2.png" /&gt; &lt;/p&gt;
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-4" src="http://souravc83.github.io/figure/unnamed-chunk-4-2.png" /&gt; &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;Santorum_plot &lt;span class="o"&gt;=&lt;/span&gt; candidate_plot&lt;span class="p"&gt;(&lt;/span&gt;poll_raw&lt;span class="p"&gt;,&lt;/span&gt; actual&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Santorum&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;Santorum_plot&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-4" src="souravc83.github.io/figure/unnamed-chunk-4-3.png" /&gt; &lt;/p&gt;
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-4" src="http://souravc83.github.io/figure/unnamed-chunk-4-3.png" /&gt; &lt;/p&gt;
 &lt;p&gt;The polls did a good job only for Ron Paul. For Romney, many polls were within a margin of error, and 
 the pooled poll underestimates Romney's support. In the case of Santorum (who actually won the Caucus), the polls are waay off!
 Every poll has underestimated Santorum. The pooled poll shows him at 15.7, about 9 points away from his 
@@ -180,19 +180,19 @@ clear decline in poll numbers. Let us look at some of the worst performing candi
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-5" src="souravc83.github.io/figure/unnamed-chunk-5-1.png" /&gt; &lt;/p&gt;
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-5" src="http://souravc83.github.io/figure/unnamed-chunk-5-1.png" /&gt; &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;Huntsman_plot &lt;span class="o"&gt;=&lt;/span&gt; candidate_plot&lt;span class="p"&gt;(&lt;/span&gt;poll_raw&lt;span class="p"&gt;,&lt;/span&gt; actual&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Huntsman&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;Huntsman_plot&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-5" src="souravc83.github.io/figure/unnamed-chunk-5-2.png" /&gt; &lt;/p&gt;
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-5" src="http://souravc83.github.io/figure/unnamed-chunk-5-2.png" /&gt; &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;Perry_plot &lt;span class="o"&gt;=&lt;/span&gt; candidate_plot&lt;span class="p"&gt;(&lt;/span&gt;poll_raw&lt;span class="p"&gt;,&lt;/span&gt; actual&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Perry&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;Perry_plot&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-5" src="souravc83.github.io/figure/unnamed-chunk-5-3.png" /&gt; &lt;/p&gt;
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-5" src="http://souravc83.github.io/figure/unnamed-chunk-5-3.png" /&gt; &lt;/p&gt;
 &lt;p&gt;The support for both Huntsmann and Bachmann are severely overestimated. The pooled plot 
 for them clearly shows that the polls did not do a good job for them. So why did the polls 
 do a good job in predicting Ron Paul? Probably because Paul has a dedicated set of supporters
@@ -248,19 +248,19 @@ between the three. Here is how the polls now shape up, for the three candidates&
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-7" src="souravc83.github.io/figure/unnamed-chunk-7-1.png" /&gt; &lt;/p&gt;
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-7" src="http://souravc83.github.io/figure/unnamed-chunk-7-1.png" /&gt; &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;Romney_plot3 &lt;span class="o"&gt;=&lt;/span&gt; candidate_plot&lt;span class="p"&gt;(&lt;/span&gt;poll_three&lt;span class="p"&gt;,&lt;/span&gt; actual_three&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Romney&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;Romney_plot3&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-7" src="souravc83.github.io/figure/unnamed-chunk-7-2.png" /&gt; &lt;/p&gt;
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-7" src="http://souravc83.github.io/figure/unnamed-chunk-7-2.png" /&gt; &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;Santorum_plot3 &lt;span class="o"&gt;=&lt;/span&gt; candidate_plot&lt;span class="p"&gt;(&lt;/span&gt;poll_three&lt;span class="p"&gt;,&lt;/span&gt; actual_three&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Santorum&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;Santorum_plot3&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-7" src="souravc83.github.io/figure/unnamed-chunk-7-3.png" /&gt; 
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-7" src="http://souravc83.github.io/figure/unnamed-chunk-7-3.png" /&gt; 
 Well, we now have the polls slightly overpredicting Romney and Paul, and still underpredicting 
 Santorum. Hoever, notice that almost every poll is now grazing the margin for Romney and 
 Paul, and there is one poll which is within the error bars for Santorun. Which one is this?
