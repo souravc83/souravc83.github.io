@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Data.Coffee.Code()</title><link>http://souravc83.github.io/</link><description></description><atom:link href="http://souravc83.github.io/feeds/python.rss.xml" rel="self"></atom:link><lastBuildDate>Sun, 24 Jan 2016 00:00:00 -0800</lastBuildDate><item><title>Tale of Two Bandits: Bayesian and Greedy</title><link>http://souravc83.github.io/tale-of-two-bandits-bayesian-and-greedy.html</link><description>&lt;style type="text/css"&gt;/*!
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Data.Coffee.Code()</title><link>http://souravc83.github.io/</link><description></description><atom:link href="http://souravc83.github.io/feeds/python.rss.xml" rel="self"></atom:link><lastBuildDate>Sat, 16 Jan 2016 00:00:00 -0800</lastBuildDate><item><title>Tale of Two Bandits: Bayesian and Greedy</title><link>http://souravc83.github.io/tale-of-two-bandits-bayesian-and-greedy.html</link><description>&lt;style type="text/css"&gt;/*!
 *
 * IPython notebook
 *
@@ -1578,4 +1578,4 @@ GSdJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJktrm/wPk04yWFhp1RgAAAABJRU5ErkJggg==
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sourav Chatterjee</dc:creator><pubDate>Sun, 24 Jan 2016 00:00:00 -0800</pubDate><guid>tag:souravc83.github.io,2016-01-24:tale-of-two-bandits-bayesian-and-greedy.html</guid><category>IPython</category><category>A/B Testing</category></item></channel></rss>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sourav Chatterjee</dc:creator><pubDate>Sat, 16 Jan 2016 00:00:00 -0800</pubDate><guid>tag:souravc83.github.io,2016-01-16:tale-of-two-bandits-bayesian-and-greedy.html</guid><category>IPython</category><category>A/B Testing</category></item></channel></rss>

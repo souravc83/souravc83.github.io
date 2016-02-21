@@ -1,5 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Data.Coffee.Code()</title><link>http://souravc83.github.io/</link><description></description><atom:link href="http://souravc83.github.io/feeds/r.rss.xml" rel="self"></atom:link><lastBuildDate>Sun, 24 Jan 2016 01:58:25 -0800</lastBuildDate><item><title>Are Iowa polls predictive?</title><link>http://souravc83.github.io/are-iowa-polls-predictive.html</link><description>&lt;h1&gt;What do Iowa polls tell us?&lt;/h1&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Data.Coffee.Code()</title><link>http://souravc83.github.io/</link><description></description><atom:link href="http://souravc83.github.io/feeds/misc.rss.xml" rel="self"></atom:link><lastBuildDate>Sat, 20 Feb 2016 00:00:00 -0800</lastBuildDate><item><title>What's wrong with histograms and what are density estimators?</title><link>http://souravc83.github.io/whats-wrong-with-histograms-and-what-are-density-estimators.html</link><description>&lt;h1&gt;Estimating Probablity Densities&lt;/h1&gt;
+&lt;p&gt;The other day I was reading Parzen's density estimators in Bishop. Density estimators are a non-parametric way of estimating the underlying probability distributions, that might have generated the data 
+that you are handed over. Parametric methods consist of assuming a distribution, and then estimating
+the parameters of the distribution, that are most likely to have generated that data (MLE/MAP etc.).
+Non-parametric estimations however, make no such assumptions.
+The simplest non-parametric estimation? You have probably used it several times, without realizing it.
+Its the humble histogram!&lt;/p&gt;
+&lt;h2&gt;Visualizing data: Histograms&lt;/h2&gt;
+&lt;p&gt;When we are given simple numerical data, I mean simple 1 Dimensional data, one of the first things we do is to look
+ at how the data is distributed i.e. find its probability distribution. The simplest thing we can do is a histogram, but it might not be the best we can do.
+ So, lets generate some data that comes from a mixture of two gaussians. We will look at the most hurriedly put together histogram and then refine it.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kp"&gt;set.seed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;667&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+hist_data &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; &lt;span class="kt"&gt;c&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; rnorm&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; rnorm&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+hist_df &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; &lt;span class="kt"&gt;data.frame&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;values&lt;span class="o"&gt;=&lt;/span&gt;hist_data&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kn"&gt;library&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;ggplot2&lt;span class="p"&gt;)&lt;/span&gt;
+p_hist &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class="p"&gt;(&lt;/span&gt;data&lt;span class="o"&gt;=&lt;/span&gt;hist_df&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; geom_bar&lt;span class="p"&gt;(&lt;/span&gt;aes&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;values&lt;span class="p"&gt;),&lt;/span&gt;stat&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;bin&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt;
+          labs&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Value&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;y&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Normalized Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;p_hist&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-1" src="http://souravc83.github.io/figure/density_estimate/unnamed-chunk-1-1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;So, one thing needs to be corrected first. This is not a probability density function(pdf) because the condition for a pdf is explicitly:
+$$ \int_{-\infty}^{\infty} p(x) = 1 $$&lt;/p&gt;
+&lt;p&gt;So, we need to normalize this histogram. But to normalize, we explicitly need to bin width. Let us assume a bin width of $w$, and lets say we have N data points. In our case, N is 200. So, What is the total area under the curve.For k bins, and a count of $C_i$ for each bin, we can write the area A as:
+$$ A = \sum_{i=1}^{i=k}C_iw$$
+$$ A = w\sum_{i=1}^{i=k}C_i = wN $$&lt;/p&gt;
+&lt;p&gt;Therefore the normalization factor has to be w*N, or the product of bin width and the total number of 
+points. Let us now explicity set a bin width and normalize:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;w &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt;&lt;span class="m"&gt;0.2&lt;/span&gt;
+break_vec &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; &lt;span class="kp"&gt;seq&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;from &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;min&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;w&lt;span class="p"&gt;,&lt;/span&gt; to&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;max&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;w&lt;span class="p"&gt;,&lt;/span&gt; by &lt;span class="o"&gt;=&lt;/span&gt; w&lt;span class="p"&gt;)&lt;/span&gt;
+h1 &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; hist&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;,&lt;/span&gt; breaks&lt;span class="o"&gt;=&lt;/span&gt; break_vec&lt;span class="p"&gt;,&lt;/span&gt; plot&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;F&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+nhist_df &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; &lt;span class="kt"&gt;data.frame&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;count&lt;span class="o"&gt;=&lt;/span&gt;h1&lt;span class="o"&gt;$&lt;/span&gt;counts&lt;span class="p"&gt;,&lt;/span&gt; xval &lt;span class="o"&gt;=&lt;/span&gt; h1&lt;span class="o"&gt;$&lt;/span&gt;mids&lt;span class="p"&gt;)&lt;/span&gt;
+nhist_df&lt;span class="o"&gt;$&lt;/span&gt;count &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; nhist_df&lt;span class="o"&gt;$&lt;/span&gt;count&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;w&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="kp"&gt;length&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kp"&gt;paste&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Area under the curve is&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;nhist_df&lt;span class="o"&gt;$&lt;/span&gt;count&lt;span class="o"&gt;*&lt;/span&gt;w&lt;span class="p"&gt;)))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;## [1] &amp;quot;Area under the curve is 1&amp;quot;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;p_norm &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class="p"&gt;(&lt;/span&gt;nhist_df&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; geom_bar&lt;span class="p"&gt;(&lt;/span&gt;aes&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;xval&lt;span class="p"&gt;,&lt;/span&gt; y&lt;span class="o"&gt;=&lt;/span&gt;count&lt;span class="p"&gt;),&lt;/span&gt; stat&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;identity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt;
+          labs&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Value&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;y&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Normalized Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;p_norm&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-2" src="http://souravc83.github.io/figure/density_estimate/unnamed-chunk-2-1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;That straightens out the issue about area under the curve. However, histograms aren't quite what we want. Why? because histograms show jumps which are not characateristic of the data but more characteristic of the finite sample size. We are looking to find the distribution that generated this data, and get around the finite sample size effect. &lt;/p&gt;
+&lt;h2&gt;Density Estimators&lt;/h2&gt;
+&lt;p&gt;To understand density estimators, let us first recreate our previous figure. How? we will not depend this time on R's built-in hist function, but make our own. Sounds like a rather fruitless exercise in coding up something rather trivial? Well, not quite. We will shortly see why.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;tophat_kernel &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt;&lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="p"&gt;,&lt;/span&gt; x_n&lt;span class="p"&gt;,&lt;/span&gt; width&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="kr"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kp"&gt;abs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;-&lt;/span&gt;x_n&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;width&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;2.&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kr"&gt;return&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;width&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kp"&gt;else&lt;/span&gt;
+    &lt;span class="kr"&gt;return&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+construct_hist &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt;&lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;,&lt;/span&gt; break_vec&lt;span class="p"&gt;,&lt;/span&gt;width&lt;span class="p"&gt;,&lt;/span&gt; kernel_function&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  mids_vec &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; break_vec &lt;span class="o"&gt;+&lt;/span&gt; width&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;
+  count_vec &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; &lt;span class="kp"&gt;rep&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kp"&gt;length&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;mids_vec&lt;span class="p"&gt;))&lt;/span&gt;
+  &lt;span class="kr"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; i &lt;span class="kr"&gt;in&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="kp"&gt;length&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;count_vec&lt;span class="p"&gt;))&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kr"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;j &lt;span class="kr"&gt;in&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="kp"&gt;length&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+      count_vec&lt;span class="p"&gt;[&lt;/span&gt;i&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; count_vec&lt;span class="p"&gt;[&lt;/span&gt;i&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; kernel_function&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;[&lt;/span&gt;j&lt;span class="p"&gt;],&lt;/span&gt;mids_vec&lt;span class="p"&gt;[&lt;/span&gt;i&lt;span class="p"&gt;],&lt;/span&gt; width&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+  nhist_df &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; &lt;span class="kt"&gt;data.frame&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;count&lt;span class="o"&gt;=&lt;/span&gt;count_vec&lt;span class="p"&gt;,&lt;/span&gt; xval &lt;span class="o"&gt;=&lt;/span&gt; mids_vec&lt;span class="p"&gt;)&lt;/span&gt;
+  nhist_df&lt;span class="o"&gt;$&lt;/span&gt;count &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; nhist_df&lt;span class="o"&gt;$&lt;/span&gt;count&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kp"&gt;length&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;))&lt;/span&gt;
+  &lt;span class="kr"&gt;return&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;nhist_df&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+derived_nhist_df &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt;construct_hist&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;,&lt;/span&gt; break_vec&lt;span class="p"&gt;,&lt;/span&gt; w&lt;span class="p"&gt;,&lt;/span&gt; tophat_kernel&lt;span class="p"&gt;)&lt;/span&gt;
+p_norm2 &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class="p"&gt;(&lt;/span&gt;derived_nhist_df&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; geom_bar&lt;span class="p"&gt;(&lt;/span&gt;aes&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;xval&lt;span class="p"&gt;,&lt;/span&gt; y&lt;span class="o"&gt;=&lt;/span&gt;count&lt;span class="p"&gt;),&lt;/span&gt; stat&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;identity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;
+            labs&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Value&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;y&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Normalized Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;p_norm2&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-3" src="http://souravc83.github.io/figure/density_estimate/unnamed-chunk-3-1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Okay, so we have now introduced this double for loop, and made things run a lot slower. Why did we do this? to understand the thinking behind the histogram method of estimation. What we are trying to do here, is 
+look at each of these bins (outer for loop), and for a single bin ask, for each data point (inner for loop) whether the data point contributes to the bin or not. By contribution what we mean here, is whether the data point falls in the width of the bin we have defined.
+Now, notice that the sudden discontinuities arise from the way we are defining the contribution of a data point. Its a binary decision, either a data point contributes or not. However, now that we have defined this framework, we are free to change this form of the contribution. We can, for example, think of a Gaussian, where the contribution is not 0/1 but decreases exponentially from the center of the bin.
+This is the basic argument of density estimation. Now, we need not stop at the Gaussian kernel, but 
+substitute it with a exponential, cosine or any other kernel that makes sense. The Gaussian is the most
+common kernel, so let us see what happens when we shift to it.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;gaussian_kernel &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="p"&gt;,&lt;/span&gt;x_n&lt;span class="p"&gt;,&lt;/span&gt; width&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+  norm_val &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="m"&gt;1.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="kp"&gt;sqrt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2.&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="kc"&gt;pi&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;width&lt;span class="o"&gt;*&lt;/span&gt;width&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="kp"&gt;exp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;-&lt;/span&gt;x_n&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;width&lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+  &lt;span class="kr"&gt;return&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;norm_val&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+gauss_hist_df &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt;construct_hist&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;,&lt;/span&gt; break_vec&lt;span class="p"&gt;,&lt;/span&gt;w&lt;span class="p"&gt;,&lt;/span&gt; gaussian_kernel&lt;span class="p"&gt;)&lt;/span&gt;
+p_gauss &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class="p"&gt;(&lt;/span&gt;gauss_hist_df&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; geom_bar&lt;span class="p"&gt;(&lt;/span&gt;aes&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;xval&lt;span class="p"&gt;,&lt;/span&gt; y&lt;span class="o"&gt;=&lt;/span&gt;count&lt;span class="p"&gt;),&lt;/span&gt; stat&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;identity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt;
+            labs&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Value&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;y&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Normalized Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;p_gauss&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-4" src="http://souravc83.github.io/figure/density_estimate/unnamed-chunk-4-1.png" /&gt;
+On comparing the histogram(i.e. the tophat kernel with the Gaussian one) we can see
+that the Gaussian has done a nice job of smoothing the kinks in the histogram.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;p_comp &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; geom_bar&lt;span class="p"&gt;(&lt;/span&gt;data &lt;span class="o"&gt;=&lt;/span&gt; derived_nhist_df&lt;span class="p"&gt;,&lt;/span&gt; aes&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;xval&lt;span class="p"&gt;,&lt;/span&gt; y&lt;span class="o"&gt;=&lt;/span&gt;count&lt;span class="p"&gt;),&lt;/span&gt; stat&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;identity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt;
+           geom_line&lt;span class="p"&gt;(&lt;/span&gt;data&lt;span class="o"&gt;=&lt;/span&gt;gauss_hist_df&lt;span class="p"&gt;,&lt;/span&gt; aes&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;xval&lt;span class="p"&gt;,&lt;/span&gt;y&lt;span class="o"&gt;=&lt;/span&gt;count&lt;span class="p"&gt;),&lt;/span&gt; colour&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;blue&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; size&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt;
+           labs&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Value&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;y&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Normalized Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kp"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;p_comp&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-5" src="http://souravc83.github.io/figure/density_estimate/unnamed-chunk-5-1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;As you can see we have managed to consirably smooth the probability density, and now we can clearly
+see the outline of the more tightly distributed Gaussian, centered around 1. Why is this practically important? This gets rid of artificial kinks in the probability density. Any estimations, based on the probability density, which assumes a nicely behaved function can now be applied more easily. For example, a derivative operator will be much more well behaved, and not show the sudden jumps due to artificial kinks in the histogram. &lt;/p&gt;
+&lt;p&gt;How well behaved this function is, is highly dependent on the bin width we choose, just like the histogram method is.
+We have overlooked this question till now. We will leave the reader with an illustration of how the 
+histogram changes with bin width.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;gauss_hist_w1 &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt;construct_hist&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;,&lt;/span&gt; break_vec&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; gaussian_kernel&lt;span class="p"&gt;)&lt;/span&gt;
+p_1 &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class="p"&gt;(&lt;/span&gt;gauss_hist_w1&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; geom_bar&lt;span class="p"&gt;(&lt;/span&gt;aes&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;xval&lt;span class="p"&gt;,&lt;/span&gt; y&lt;span class="o"&gt;=&lt;/span&gt;count&lt;span class="p"&gt;),&lt;/span&gt; stat&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;identity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt;
+      labs&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Value&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;y&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Normalized Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+gauss_hist_w3 &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt;construct_hist&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;,&lt;/span&gt; break_vec&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;0.5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; gaussian_kernel&lt;span class="p"&gt;)&lt;/span&gt; 
+
+p_3 &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class="p"&gt;(&lt;/span&gt;gauss_hist_w3&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; geom_bar&lt;span class="p"&gt;(&lt;/span&gt;aes&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;xval&lt;span class="p"&gt;,&lt;/span&gt; y&lt;span class="o"&gt;=&lt;/span&gt;count&lt;span class="p"&gt;),&lt;/span&gt; stat&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;identity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt;
+      labs&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Value&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;y&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Normalized Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+gauss_hist_w4 &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt;construct_hist&lt;span class="p"&gt;(&lt;/span&gt;hist_data&lt;span class="p"&gt;,&lt;/span&gt; break_vec&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; gaussian_kernel&lt;span class="p"&gt;)&lt;/span&gt;
+p_4 &lt;span class="o"&gt;&amp;lt;-&lt;/span&gt; ggplot&lt;span class="p"&gt;(&lt;/span&gt;gauss_hist_w4&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; geom_bar&lt;span class="p"&gt;(&lt;/span&gt;aes&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;xval&lt;span class="p"&gt;,&lt;/span&gt; y&lt;span class="o"&gt;=&lt;/span&gt;count&lt;span class="p"&gt;),&lt;/span&gt; stat&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;identity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt;
+      labs&lt;span class="p"&gt;(&lt;/span&gt;x&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Value&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;y&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Normalized Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kn"&gt;library&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;gridExtra&lt;span class="p"&gt;)&lt;/span&gt;
+grid.arrange&lt;span class="p"&gt;(&lt;/span&gt;p_1&lt;span class="p"&gt;,&lt;/span&gt;p_gauss&lt;span class="p"&gt;,&lt;/span&gt; p_3&lt;span class="p"&gt;,&lt;/span&gt;p_4&lt;span class="p"&gt;,&lt;/span&gt; ncol&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="plot of chunk unnamed-chunk-6" src="http://souravc83.github.io/figure/density_estimate/unnamed-chunk-6-1.png" /&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sourav Chatterjee</dc:creator><pubDate>Sat, 20 Feb 2016 00:00:00 -0800</pubDate><guid>tag:souravc83.github.io,2016-02-20:whats-wrong-with-histograms-and-what-are-density-estimators.html</guid></item><item><title>Are Iowa polls predictive?</title><link>http://souravc83.github.io/are-iowa-polls-predictive.html</link><description>&lt;h1&gt;What do Iowa polls tell us?&lt;/h1&gt;
 &lt;p&gt;Everyone is staring hard at the polls in Iowa and trying to predict who the winners will be.
 There are data gurus, there are journalists, and everyone in between. But are these Iowa polls 
 that predictive?
@@ -273,4 +410,4 @@ People have just started making up their mind and consolidating. If you want a p
 I would look for one about 3/4 days from Iowa caucus, with a large sample size (perhaps PPP will 
 do another one this time), and then look at the top 3 candidates there (which will, in all 
 probability be Trump-Cruz-Rubio). Ignore everyone else, because people will not vote for "losers", as
-Trump would say. &lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sourav Chatterjee</dc:creator><pubDate>Sun, 24 Jan 2016 01:58:25 -0800</pubDate><guid>tag:souravc83.github.io,2016-01-24:are-iowa-polls-predictive.html</guid><category>Iowa</category><category>Politics</category></item></channel></rss>
+Trump would say. &lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sourav Chatterjee</dc:creator><pubDate>Sat, 23 Jan 2016 00:00:00 -0800</pubDate><guid>tag:souravc83.github.io,2016-01-23:are-iowa-polls-predictive.html</guid></item></channel></rss>
