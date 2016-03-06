@@ -5,29 +5,36 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://souravc83.github.io/</loc>
-<lastmod>2016-02-21T00:04:44-00:00</lastmod>
+<lastmod>2016-03-06T15:28:50-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://souravc83.github.io/archives.html</loc>
-<lastmod>2016-02-21T00:04:44-00:00</lastmod>
+<lastmod>2016-03-06T15:28:50-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://souravc83.github.io/tags.html</loc>
-<lastmod>2016-02-21T00:04:44-00:00</lastmod>
+<lastmod>2016-03-06T15:28:50-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://souravc83.github.io/categories.html</loc>
-<lastmod>2016-02-21T00:04:44-00:00</lastmod>
+<lastmod>2016-03-06T15:28:50-00:00</lastmod>
 <changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://souravc83.github.io/denoising-images-and-markov-random-fields.html</loc>
+<lastmod>2016-03-06T00:00:00-08:00</lastmod>
+<changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
 
@@ -68,7 +75,7 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://souravc83.github.io/category/python.html</loc>
-<lastmod>2016-01-16T00:00:00-07:53</lastmod>
+<lastmod>2016-03-06T00:00:00-07:53</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -82,7 +89,7 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://souravc83.github.io/tag/ipython.html</loc>
-<lastmod>2016-01-16T00:00:00-07:53</lastmod>
+<lastmod>2016-03-06T00:00:00-07:53</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -95,8 +102,15 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
+<loc>http://souravc83.github.io/tag/graphical-models.html</loc>
+<lastmod>2016-03-06T00:00:00-07:53</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
 <loc>http://souravc83.github.io/author/sourav-chatterjee.html</loc>
-<lastmod>2016-02-20T00:00:00-07:53</lastmod>
+<lastmod>2016-03-06T00:00:00-07:53</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
