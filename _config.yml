@@ -2,6 +2,7 @@ baseurl: /souravc83.github.io-blog
 title: Tufte-Jekyll
 subtitle: Content-centric blogging
 author: clay harmon
+google_analytics: UA-30506809-1
 simple_search: http://google.com/search
 description: A Jekyll theme for content-rich sites
 name: tufte
