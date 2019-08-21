@@ -1,31 +1,142 @@
----
-layout: null
-nav_exclude: true
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ site.title | xml_escape }}</title>
-    <description>{{ site.description | xml_escape }}</description>
-    <link>{{ site.url }}{{ site.baseurl }}/</link>
-    <atom:link href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" rel="self" type="application/rss+xml"/>
-    <pubDate>{{ site.time | date_to_rfc822 }}</pubDate>
-    <lastBuildDate>{{ site.time | date_to_rfc822 }}</lastBuildDate>
-    <generator>Jekyll v{{ jekyll.version }}</generator>
-    {% for post in site.posts limit:10 %}
+    <title>Tufte-Jekyll</title>
+    <description>A Jekyll theme for content-rich sites</description>
+    <link>http://100.115.92.201:4000/souravc83.github.io-blog/</link>
+    <atom:link href="http://100.115.92.201:4000/souravc83.github.io-blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 20 Aug 2019 23:16:59 -0400</pubDate>
+    <lastBuildDate>Tue, 20 Aug 2019 23:16:59 -0400</lastBuildDate>
+    <generator>Jekyll v3.8.6</generator>
+    
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        <description>{{ post.content | xml_escape }}</description>
-        <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
-        <link>{{ post.url | prepend: site.baseurl | prepend: site.url }}</link>
-        <guid isPermaLink="true">{{ post.url | prepend: site.baseurl | prepend: site.url }}</guid>
-        {% for tag in post.tags %}
-        <category>{{ tag | xml_escape }}</category>
-        {% endfor %}
-        {% for cat in post.categories %}
-        <category>{{ cat | xml_escape }}</category>
-        {% endfor %}
+        <title>Compare your Bayesian Models: BIC</title>
+        <description>&lt;h2 id=&quot;comparing-bayesian-models&quot;&gt;Comparing Bayesian Models&lt;/h2&gt;
+
+&lt;p&gt;There a number of model selection methods in machine learning. In essence, the methods try to balance training errors with the complexity of the model. In this post, we want to look at the Bayesian Information Criterion. Although its final approximate form is used widely in practice, there is less emphasis on its actual theoretical basis. This is what we will try to address in this post.&lt;/p&gt;
+
+&lt;p&gt;Given different Bayesian models, how can we compare the different models with each other. As an example, think of the Gaussian mixture model. Let’s say I am trying to fit the data I have with a mixture of K Gaussians. Different values of K correspond to different models. This is kinda equivalent to the question “how to choose K in K-means?”&lt;/p&gt;
+
+&lt;p&gt;More formally, let’s say we have a Bayesian model &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;M_i&lt;/script&gt;&lt;/span&gt;, parameterized by the parameters &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;\theta_i&lt;/script&gt;&lt;/span&gt;. We will start the analysis with a prior belief about &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;\theta_i&lt;/script&gt;&lt;/span&gt; and then find update the belief after looking at the data.&lt;/p&gt;
+
+&lt;p&gt;We might ask, what is the probability of the data we observe conditioned on this model.&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;p(D) = \int p(D,\theta_i)d\theta_i = \int p(D|\theta_i)p(\theta_i)d\theta_i&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;The Bayesian information criterion tries to maximize this probability. In plain English, it is saying that the best model is the one, that makes the data most likely. In other words, among all models, this looks like the model from which the data was drawn from most likely.&lt;/p&gt;
+
+&lt;p&gt;Now, this integral above is hard to evaluate. So, we will need to resort to an approximation. Let us first take a detour, and learn about Laplace Approximation.&lt;/p&gt;
+
+&lt;h2 id=&quot;laplace-approximation&quot;&gt;Laplace Approximation&lt;/h2&gt;
+
+&lt;p&gt;Laplace approximation is a way of saying, if there is a complicated probability distribution we cannot find, we approximate it by a Gaussian, whose mean is at the mode of the distribution. The only other parameter we need to define is the variance. To define the variance, we will look at the Taylor expanstion of the function around its mode. We will show the result for the Taylor expansion for a scalar &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;z&lt;/script&gt;&lt;/span&gt; and then we will show the extension when &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;z&lt;/script&gt;&lt;/span&gt; is vector.&lt;/p&gt;
+
+&lt;p&gt;&lt;label for=&quot;mf-id-whatever&quot; class=&quot;margin-toggle&quot;&gt;⊕&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;mf-id-whatever&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;marginnote&quot;&gt;&lt;img class=&quot;fullwidth&quot; src=&quot;/souravc83.github.io-blog/assets/img/test.png&quot; /&gt;&lt;br /&gt;Laplace Approximation basically approximates a complicated probability distribution with a Gaussian centered at the mode of the distribution&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, lets see this mathematically. Lets say there is a probability density function&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;p(z) = \frac{1}{Z}f(z)&lt;/script&gt;&lt;/div&gt;
+&lt;p&gt;where &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;Z = \int f(z)dz&lt;/script&gt;&lt;/span&gt;, which as we know, is in general, a difficult integral to compute. But since we have decided to approximate this with a Gaussian, and we know a Gaussian is a valid probability distribution, the Laplace approximation provides us an easy way to approximate this integral.&lt;/p&gt;
+
+&lt;p&gt;Now, lets consider a point &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;z_0&lt;/script&gt;&lt;/span&gt; which is the mode. Therefore, by definition, &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;f'(z_0)= 0&lt;/script&gt;&lt;/span&gt;. If we expand &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;ln(f(z))&lt;/script&gt;&lt;/span&gt; in a taylor expansion around &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;z_0&lt;/script&gt;&lt;/span&gt;, we get:&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;ln(f(z)) = ln(f(z_0)) + \frac{d}{dz}ln(f(z))|_{z_0}(z-z_0) + \frac{d^2}{d^2z}ln(f(z)|_{z_0}(z-z_0)^2 + ...&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;Notice that the second term will be zero, because&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;\frac{d}{dz} ln(f(z))|_{z_0} = \frac{1}{f(z_0)} f'(z_0) = 0&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;Therefore, we can write&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;ln(f(z)) = ln(f(z_0)) - \frac{1}{2}A(z-z_0)^2&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;Here &amp;lt;div class=&quot;mathblock&quot;&amp;gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;A = - \frac{d^2}{dz^2} ln(f(z))|_{z_0}&lt;/script&gt;&amp;lt;/div&amp;gt;&lt;/p&gt;
+
+&lt;p&gt;Taking exponentials&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;f(z) = f(z_0)exp(-\frac{A }{2}(z - z_0)^2)&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, recognize that if this were a Gaussian, then &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;A = \frac{1}{\sigma^2}&lt;/script&gt;&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now, in the multivariate case, you can go through a similar derivation. The only difference is, &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;A&lt;/script&gt;&lt;/span&gt; will be the Hessian matrix, instead of just being a single second derivative. This will correspond to the precision matrix of the multivariate normal, i.e. the inverse of the covariance matrix. If &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;z&lt;/script&gt;&lt;/span&gt; is a vector, we can approximate the function &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;f(z)&lt;/script&gt;&lt;/span&gt; as a multivariate normal, around its mode&lt;/p&gt;
+
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;f(z) =  f(z_0)exp(-\frac{1}{2}(z-z_0)^T A (z-z_0))&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;What this tells us, is that by ignoring the higher order terms of the Taylor expansion, we have managed to express an arbitrary function f(z) near its mode with a normal distribution, whose mean is the mode of the function, and precision matrix is the Hessian at &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;z_0&lt;/script&gt;&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;Repeating again what we said before,  &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;Z = \int f(z)dz&lt;/script&gt;&lt;/span&gt; is difficult to calculate. Now, lets use the Laplace approximation to get it.&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+\begin{align}
+Z = \int f(z)dz = f(z_0)exp(-\frac{1}{2}(z-z_0)^T A (z-z_0)) dz \\ = f(z_0) \frac{(2\pi)^{M/2}}{|A|^{1/2}}\int \frac{|A|^{1/2}}{(2\pi)^{M/2}}exp(-\frac{1}{2}(z-z_0)^T A (z-z_0)) dz = f(z_0) \frac{(2\pi)^{M/2}}{|A|^{1/2}}
+\end{align}&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;So, what happened here? In the first step, we wrote the expression we have derived before, for &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;f(z)&lt;/script&gt;&lt;/span&gt;. Then we multiplied and divided the right hand side by &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;\frac{(2\pi)^{M/2}}{|A|^{1/2}}&lt;/script&gt;&lt;/span&gt; and moved the integral to contain terms with z. Now, we multiplied and divided to make everything inside the integral sign equal to the density of the normal distribution, in M dimensions (A is the precision, i.e. the inverse of the covariance matrix). The density integrates to 1, and hence we are left with the term outside the integral.&lt;/p&gt;
+
+&lt;p&gt;In practice what this meant is that, to find this complicated integral, all that we need to do is to find the value of the function at &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;z_0&lt;/script&gt;&lt;/span&gt; where the function reaches a maximum, and also the Hessian matrix A at &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;z_0&lt;/script&gt;&lt;/span&gt;. Then we are all set to calculate the complicated integral we are after.&lt;/p&gt;
+
+&lt;h2 id=&quot;back-to-bayesian-information-criterion&quot;&gt;Back to Bayesian Information Criterion&lt;/h2&gt;
+
+&lt;p&gt;So, where we got stuck last time was that we did not know how to evaluate the integral to get the marginal. We wanted to evaluate:&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;p(D) = \int p(D,\theta_i)d\theta_i = \int p(D|\theta_i)p(\theta_i)d\theta_i&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;Here &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;f(\theta) = p(D|\theta)p(\theta)&lt;/script&gt;&lt;/span&gt; and therefore, using Laplace approximation,&lt;/p&gt;
+
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;p(D) = p(D|\theta_{MAP})p(\theta_{MAP})\frac{(2\pi)^{M/2}}{|A|^{1/2}}&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;Taking log&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;ln(p(D)) = ln(p(D|\theta_{MAP}) + ln(p(\theta_{MAP})) + \frac{M}{2} ln(2\pi) - \frac{1}{2} ln|A|&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, let’s assume that N is large, and terms that depend on N dominate this expression. 
+It is easy to see that &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;ln(p(D|\theta_{MAP}) &lt;/script&gt;&lt;/span&gt; grows with the size of the data. For example, if the data is IID, then&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;ln(p(D|\theta_{MAP}) = \Sigma_{i=1}^n ln(p(D_i|\theta_{MAP})&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;Similar to the likelihood, the hessian of the likelihood grows with the size of the data. Now, we will assume that the Hessian linearly increases with N, i.e. &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;A \approx N A_0&lt;/script&gt;&lt;/span&gt;.
+So, therefore, from the properties of determinants&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;|NA_0| = N^M A_0&lt;/script&gt;&lt;/div&gt;
+&lt;p&gt;if &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;A_0&lt;/script&gt;&lt;/span&gt; is an M dimensional matrix. This is because imagine each term in the determinant is a product of m terms, each multiplied by N (in a 2D matrix [[a,b], [c,d]], the determinant is (ad - bc)).&lt;/p&gt;
+
+&lt;p&gt;We can ignore the terms that do not grow with the size of the data. These are the terms &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;ln(p(\theta_{MAP}))&lt;/script&gt;&lt;/span&gt; and &lt;span&gt;​&lt;script type=&quot;math/tex&quot;&gt;\frac{M}{2} ln(2\pi)&lt;/script&gt;&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;Hence, we can now write:&lt;/p&gt;
+&lt;div class=&quot;mathblock&quot;&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+\begin{align}
+ln(p(D)) \approx ln(p(D|\theta_{MAP}) - \frac{1}{2} ln|A|\\  =  ln(p(D|\theta_{MAP}) -   \frac{1}{2} lnN^M|A_0| \\ \approx ln(p(D|\theta_{MAP}) - \frac{M}{2} lnN
+\end{align}
+&lt;/script&gt;&lt;/div&gt;
+
+&lt;p&gt;This result defines the &lt;strong&gt;Bayesian information criterion&lt;/strong&gt;. The Bayesian information criterion is important because it scores a model higher if the likelihood of the data given the posterior mode is high, but it penalizes a model that uses a large number of parameters(in this case M).&lt;/p&gt;
+</description>
+        <pubDate>Wed, 14 Aug 2019 17:46:04 -0400</pubDate>
+        <link>http://100.115.92.201:4000/souravc83.github.io-blog/articles/19/bayesian-info</link>
+        <guid isPermaLink="true">http://100.115.92.201:4000/souravc83.github.io-blog/articles/19/bayesian-info</guid>
+        
+        
+        <category>statistics,</category>
+        
+        <category>bayesian</category>
+        
       </item>
-    {% endfor %}
+    
+      <item>
+        <title>Welcome to Jekyll!</title>
+        <description>&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory - edit this post and re-build (or run with the &lt;code class=&quot;highlighter-rouge&quot;&gt;-w&lt;/code&gt; switch) to see your changes!
+To add new posts, simply add a file in the &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory that follows the convention: YYYY-MM-DD-name-of-post.ext.=]&lt;/p&gt;
+
+&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Tom'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints 'Hi, Tom' to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/mojombo/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 08 Feb 2015 08:06:04 -0500</pubDate>
+        <link>http://100.115.92.201:4000/souravc83.github.io-blog/articles/15/welcome-to-jekyll</link>
+        <guid isPermaLink="true">http://100.115.92.201:4000/souravc83.github.io-blog/articles/15/welcome-to-jekyll</guid>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
+    
   </channel>
 </rss>
