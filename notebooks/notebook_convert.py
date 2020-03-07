@@ -47,6 +47,47 @@ def nb2html(nb_filepath):
     return output
 
 
+def insert_all_scripts():
+    all_script_str = """
+    <!-- Bootstrap core CSS -->
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Custom styles for this template -->
+	<link href="/css/notebook.min.css" rel="stylesheet">
+	<link href="/css/main.min.css" rel="stylesheet">
+	<link href="/css/syntax.min.css" rel="stylesheet">
+
+  <link href="/css/font-awesome.min.css" rel="stylesheet">
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_HTML"></script>
+    <!-- MathJax configuration -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": {
+            styles: {'.MathJax_Display': {"margin": 0}},
+            linebreaks: { automatic: true }
+        }
+    });
+    </script>
+    <!-- End of mathjax configuration -->  
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/input_exapand_collapse.js"></script>
+    """
+    
+    return all_script_str
+
+
+
 def insert_collapse_buttons(soup):
     """
     Insert the collapse buttons on the code input field.
@@ -133,7 +174,9 @@ def add_jekyll_header(html_str, layout, title, description):
         '---',
         ''
     ])
-    return '\n'.join([header, html_str])
+    script_str = insert_all_scripts()
+    
+    return '\n'.join([header, script_str, html_str])
 
 
 def save_conversion(html_str, nbpath, date):
