@@ -87,7 +87,6 @@ def insert_all_scripts():
     return all_script_str
 
 
-
 def insert_collapse_buttons(soup):
     """
     Insert the collapse buttons on the code input field.
