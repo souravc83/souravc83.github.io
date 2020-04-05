@@ -1,0 +1,455 @@
+---
+layout: default
+title: A Gentle Introduction to Minimax Estimators
+description: None
+---
+
+
+    <!-- Bootstrap core CSS -->
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Custom styles for this template -->
+	<link href="/css/notebook.min.css" rel="stylesheet">
+	<link href="/css/main.min.css" rel="stylesheet">
+	<link href="/css/syntax.min.css" rel="stylesheet">
+
+  <link href="/css/font-awesome.min.css" rel="stylesheet">
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_HTML"></script>
+    <!-- MathJax configuration -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\(","\)"] ],
+            displayMath: [ ['$$','$$'], ["\[","\]"] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": {
+            styles: {'.MathJax_Display': {"margin": 0}},
+            linebreaks: { automatic: true }
+        }
+    });
+    </script>
+    <!-- End of mathjax configuration -->  
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/input_exapand_collapse.js"></script>
+    
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <h1 id="A-Gentle-Introduction-to-Minimax-Estimators">
+    A Gentle Introduction to Minimax Estimators
+    <a class="anchor-link" href="#A-Gentle-Introduction-to-Minimax-Estimators">
+     ¶
+    </a>
+   </h1>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <p>
+    You have probably heard about minimax estimators, bayes estimators etc. This is an attempt to write about what they are and why we care, with a very simple real world example.
+   </p>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <h2 id="Example:-Tossing-Coins">
+    Example: Tossing Coins
+    <a class="anchor-link" href="#Example:-Tossing-Coins">
+     ¶
+    </a>
+   </h2>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <p>
+    Our example is actually really simple. Lets say you have tossed a coin 10 times, and got a head 4 times. What is the probability of getting a head? This might sounds very straightforward. Of course 4/10 = 0.4!
+But in fact it is not that simple. It may be a fair coin(p=0.5) and we just got 4 heads instead of 5 by random chance. What might be a good way to estimate the probability of getting a head? This is the problem we will try to answer.
+   </p>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <h2 id="Risk-of-an-Estimator">
+    Risk of an Estimator
+    <a class="anchor-link" href="#Risk-of-an-Estimator">
+     ¶
+    </a>
+   </h2>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <p>
+    Often, we talk about estimators that minimize the "mean squared error" or MSE. There are many reasons why this is useful (and also many reasons why it might not be). But this is an example of a
+    <strong>
+     Loss Function
+    </strong>
+    . Let $\theta$ be a parameter. For example, it is the
+    <strong>
+     true
+    </strong>
+    probability of falling heads, we do not know. We have seen some data (10 tosses, 4 heads) and we want to get a good estimate $\hat{\theta}$ of $\theta$.
+   </p>
+   <p>
+    What would be a good estimate? One way to get a good estimate is to minimize a loss, such as mean squared error. We define the loss function of the estimator:
+$$L(\theta, \hat{\theta}) = (\theta - \hat{\theta})^2$$
+   </p>
+   <p>
+    If we do a good job, then this number should be small. Hence, we want to define its mean value as the risk of an estimator, and minimize this risk. The risk of an estimator is:
+$$R(\theta, \hat{\theta}(X)) = \mathbb{E}_\theta L(\theta, \hat{\theta}(X))$$
+   </p>
+   <p>
+    It is important to unpack this. First, I have explicitly written $\hat{\theta}(X)$ to emphasize that this is a statistic, i.e. a function of the data. In frequentist world, data is random, parameter is fixed. So, as we draw different random samples of the data, we get different statistic, and loss functions. The expectation is with respect to the distribution of the data, i.e. an average of all the random draws I made, to get a loss function.
+When our loss function is the squared error, this is simply our well known MSE.
+$$R(\theta, \hat{\theta}(X)) = \mathbb{E}_\theta (\theta - \hat{\theta}(X))^2$$
+   </p>
+   <p>
+    You can consider other risk functions as well. For example, in real life, a more useful risk function would be the absolute loss, which is more robust to outliers.
+$$R(\theta, \hat{\theta}(X)) = \mathbb{E}_\theta |\theta - \hat{\theta}(X)|$$
+   </p>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <h2 id="Two-Estimators">
+    Two Estimators
+    <a class="anchor-link" href="#Two-Estimators">
+     ¶
+    </a>
+   </h2>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <p>
+    I will propose two estimators of $\theta$, i.e. the probability of getting an head. We will calculate the risk function of those two estimators under squared loss.
+   </p>
+   <h3 id="MLE-Estimator">
+    MLE Estimator
+    <a class="anchor-link" href="#MLE-Estimator">
+     ¶
+    </a>
+   </h3>
+   <p>
+    This is the one that you had guessed before. It is simply
+$$\hat{\theta}_1 = \frac{\sum X_i}{N}$$
+For example if $X_i=1$ when falling head, and 0 when coin falls tails. You get 4 heads, and $\sum X_i = 4$ and $N=10$ and $\hat{\theta}_1 = \frac{4}{10} = 0.4$
+   </p>
+   <p>
+    What is the risk of this estimator. We will use some well known results. First, the bias-variance decomposition tells us that MSE = bias squared + variance. $\hat{\theta}$ is sample mean. It is an unbiased estimator of population mean, and 
+$$Var(\hat{\theta}_1) = \frac{(\theta)(1 - \theta)}{N}$$
+   </p>
+   <p>
+    Therefore:
+$$R(\theta, \hat{\theta}_1) = \frac{(\theta)(1 - \theta)}{N}$$
+   </p>
+   <p>
+    <strong>
+     Now, I want to point out a REALLY IMPORTANT THING. Notice that the risk of the estimator depends on the true value of the parameter, $\theta$
+    </strong>
+    . 
+Our goal was to find an estimator that has small risk. But it seems that the risk itself can be small or large, depending on the true value of the parameter. However, we don't know the true value (otherwise, why would be be trying to estimate?). Then how do we find a good estimator?
+   </p>
+   <p>
+    <strong>
+     This is the challenge we are trying to address
+    </strong>
+   </p>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <h3 id="A-Bayesian-Approach">
+    A Bayesian Approach
+    <a class="anchor-link" href="#A-Bayesian-Approach">
+     ¶
+    </a>
+   </h3>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <p>
+    I won't spend a lot of time explaining what Bayesian statistics is, etc. But a well known bayesian approach is to have a conjugate prior, which is a beta distribution in this case. This is our belief about what $\theta$ is before we toss a coin. Maybe we believe the coin is fair, because generally all coins coming from the mint are fair. If our prior is $Beta(\alpha, \beta)$, the posterior distribution is beta-binomial, with a mean:
+$$\hat{\theta}_2 = \frac{\sum X_i + \alpha}{\alpha + \beta + N}$$
+   </p>
+   <p>
+    A simple physical understanding is in terms of imaginary tosses. Since 10 is a really small sample, we wish to insert our subjective belief by adding more imaginary tosses and heads and tails to make sure our estimate is good. Maybe we are very sure that the coin is fair. We insert $\alpha = 50$ heads and $\beta = 50$ tails which are imaginary, and reflect our prior belief. Then we will calculate $\hat{\theta}_2 = \frac{4 + 50}{50 + 50 + 10} = \frac{54}{110} = 0.491$. You see how the estimate is closer to 50% rather than the 40% we calculated from raw data?
+   </p>
+   <p>
+    Well, now begins a confusion, on which one might be a better estimator?
+To go there, we will need to repeat the same exercise as the previous one here. We need to find the MSE. Again, MSE = bias squared + variance.
+   </p>
+   <p>
+    Therefore, 
+$$MSE = \left(\mathbb{E}_\theta\left(\frac{\sum X_i + \alpha}{\alpha + \beta + N}\right) - \theta \right)^2 + 
+         Var_\theta \left(\frac{\sum X_i + \alpha}{\alpha + \beta + N}\right) \\
+         = \left( \frac{N\theta + \alpha}{\alpha + \beta + N}  - \theta \right)^2 + 
+         \frac{1}{(\alpha + \beta + N)^2} Var_\theta (\sum X_i + \alpha) \\
+         = \left( \frac{N\theta + \alpha}{\alpha + \beta + N} - \theta \right)^2 + 
+         \frac{N \theta(1 - \theta)}{(\alpha + \beta + N)^2}$$
+   </p>
+   <p>
+    The choice of $\alpha$ and $\beta$ is subjective. For reasons that will be clear later, lets make a particular choice. We choose, $\alpha = \beta = \sqrt{\frac{N}{4}}$. With this choice, 
+$$\alpha + \beta + N = N + \sqrt{N}$$
+and
+$$MSE = \frac{(\alpha - \alpha \theta - \beta \theta)^2  - (N \theta - N \theta^2)}{(\alpha + \beta + N)^2}  = 
+        \frac{\frac{N}{4}(1 - 2\theta)^2  - (N \theta - N \theta^2)}{(N + \sqrt{N})^2} = \frac{N}{4(N + \sqrt{N})^2}$$
+   </p>
+   <p>
+    Notice that with this choice, the risk is now independent of the true parameter.
+   </p>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <h2 id="Which-one-is-Better?-Can't-say.">
+    Which one is Better? Can't say.
+    <a class="anchor-link" href="#Which-one-is-Better?-Can't-say.">
+     ¶
+    </a>
+   </h2>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <p>
+    So, the question is, which estimator is better? Of course, the one with lower risk. Let's plot the risks of the estimators as a function of the true parameter $\theta$.
+   </p>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+ <div class="input">
+  <div class="prompt input_prompt">
+   In [12]:
+  </div>
+  <div class="inner_cell">
+   <div class="input_area">
+    <div class="collapse_expand_button fa fa-1x fa-minus-square-o">
+    </div>
+    <div class="highlight hl-ipython3">
+     <pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">small_N</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">mle_risk</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">theta</span><span class="p">)</span><span class="o">/</span><span class="n">small_N</span>
+
+<span class="n">bayesian_risk</span> <span class="o">=</span> <span class="n">small_N</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">small_N</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">small_N</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">mle_risk</span><span class="p">,</span> <span class="s1">'bo-'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'MLE Estimator'</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">bayesian_risk</span><span class="p">,</span> <span class="s1">'ro-'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Bayesian Estimator'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre>
+    </div>
+   </div>
+  </div>
+ </div>
+ <div class="output_wrapper">
+  <div class="output">
+   <div class="output_area">
+    <div class="prompt output_prompt">
+     Out[12]:
+    </div>
+    <div class="output_text output_subarea output_execute_result">
+     <pre>&lt;matplotlib.legend.Legend at 0x7f670a8a9898&gt;</pre>
+    </div>
+   </div>
+   <div class="output_area">
+    <div class="prompt">
+    </div>
+    <div class="output_png output_subarea">
+     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYQAAAD8CAYAAAB3u9PLAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDMuMC4zLCBodHRwOi8vbWF0cGxvdGxpYi5vcmcvnQurowAAIABJREFUeJzt3XmYVNWd//H3t5tFQUBt8DdqK42KUWRpsN3CjygyKuKC20xwEDBiTIz8TGIk0eDCmJBH40xQH81CRgNKqxgmMcxoxJjAaGKMtNoSxBibRWxwtAXZbBFovr8/7q22aKq7bnfXXp/X89TTVbdO3Tq3q+791jnne881d0dERKQk2xUQEZHcoIAgIiKAAoKIiIQUEEREBFBAEBGRkAKCiIgACggiIhJSQBAREUABQUREQl2yXYH26Nu3r1dUVGS7GiIieeWVV1750N37JSuXVwGhoqKCmpqabFdDRCSvmNk7Ucqpy0hERAAFBBERCSkgiIgIoIAgIiIhBQQREQEiBgQzG2tmb5lZnZndlOD57ma2IHz+L2ZWES4/y8xeMbO/hn/PjHvN0nCdteHtkFRtlEg6VFdDRQWUlAR/v/a1zx737RvcWt6vqAheJ5IPLNkV08ysFPg7cBZQDywDLnf3lXFlvgYMdfevmtkE4GJ3/6KZDQfed/cNZjYYWOzuh4evWQrc6O6R80irqqpcaaeSbtXVMGMGrFsHBx8cLNu4EcygIxcYjL2urCx4vGkTHHkkzJoFEyemrt4irTGzV9y9Klm5KC2Ek4E6d1/t7juBx4HxLcqMB+aF9xcCY8zM3P01d98QLn8D2N/MukfbBJHMif36N4NJk+Cdd4KD+MaNwQ06FgziXxdbl3uw/kmTgvdTK0JyRZSAcDjwbtzj+nBZwjLuvhvYApS1KHMp8Kq7fxq37Bdhd9GtZmaJ3tzMrjGzGjOraWhoiFBdkWgSBQHo+IG/vWLvo+AguSIjg8pmdgJwF/CVuMUT3X0IMCq8TUr0Wnef4+5V7l7Vr1/SM69F2pTtINAaBQfJBVECwnrgiLjH5eGyhGXMrAvQB9gYPi4Hfg1MdvdVsRe4+/rw7zbgUYKuKZGUy9Ug0BoFB8mWKAFhGTDQzAaYWTdgArCoRZlFwJTw/mXAH9zdzexA4CngJnf/U6ywmXUxs77h/a7A+cCKzm2KyGfSFQRiHZv9+8O11wZ/zYIB47Kyve/Hl+8oBQfJpKST27n7bjObBiwGSoGH3P0NM7sDqHH3RcCDwCNmVgdsIggaANOAY4DbzOy2cNnZwMfA4jAYlALPAT9P4XZJEauuhmuugcbG4HE2M4NSmbEUHxyuuSa4rywlSaWkaae5RGmn0pbYwTfWGmiv2EG6f//0p4TG17Wj6ayQmbpK/ktl2qlIzmqtayiq+C6gRx4JDsxr16b/ADtxYvA+7sH79u+/d32iUleSpJICguStWNdQe8cHshUEWtPZ4NCyK0lBQTpKAUHyTqxVcMUVn40TJJNrQaA1nQ0OjY3B/0WtBekIBQTJKy1bBVHkehBoTWvBIQq1FqQjFBAkL3SkVdCjB8yfn19BoDWx4DB/frBdUTQ2wpQpmmRPolNAkJzXnlZBfNfQnDn5Hwhamjgx2K6oXUlNTZ/NnaQWgySjgCA5q72tgnztGmqvjnYlaXxBklFAkJzUnlZBIXUNtVdHupLUWpDWKCBITulIq6AQu4baK74ryQxKS9sur9aCJKKAIDlDrYLOibUW9uyBefOitRjUWpB4CgiSM2bMUKsgVVoOPrelsTH434soIEhWxV+nOFnLQK2C9mnP+MI776j7SBQQJIviu4iSTTuhVkHHRW0tqPtIFBAk49ozcKxWQWpEbS1osLm4KSBIRkUdODZTqyAd1FqQtuh6CJJRFRXJg0H//sGvWUkvfRbFQ9dDkJwS6yaKMnA8a1ZGqlT0Zs3SYLPsTQFB0i5qN5G6iDJL3UfSkgKCpF2y8ws0cJw97Rls1rkKhU8BQdImSjeRWgW5IUprQd1Hha9LtisghSnWTdRWy0ADlrll4sTg1lYQj3UfxcpLYVELQdIiSjeRBo9zU7LBZnUfFS4FBEkpdRPlP3UfFS91GUnKqJuocKj7qDiphSApo26iwqPuo+KigCCdpm6iwqXuo+KiLiPpFHUTFT51HxUPtRCkU9RNVDzUfVT4FBCkU9ata/05dRMVlijdR219HyT3KSBIh8TGDVqbLDfWTaRgUFhiU120FhTcNZ6QzyIFBDMba2ZvmVmdmd2U4PnuZrYgfP4vZlYRLj/LzF4xs7+Gf8+Me82J4fI6M7vPzCxVGyXplWyyOnUTFb62uo80GV7+ShoQzKwUeAA4FxgEXG5mg1oUmwp85O7HALOBu8LlHwIXuPsQYArwSNxrfgJ8GRgY3sZ2Yjskg9oaN1A3UXFI1n2k8YT8FKWFcDJQ5+6r3X0n8DgwvkWZ8cC88P5CYIyZmbu/5u4bwuVvAPuHrYlDgd7u/pIHV+h5GLio01sjaZUsvdRM3UTFJNZ91FrbXumo+SdKQDgceDfucX24LGEZd98NbAHKWpS5FHjV3T8Ny9cnWafkkCjXNDjyyMzVR3JHW5+7uo/yS0YGlc3sBIJupK904LXXmFmNmdU0NDSkvnISidJLpTVKRy0cUQLCeuCIuMfl4bKEZcysC9AH2Bg+Lgd+DUx291Vx5cuTrBMAd5/j7lXuXtWvX78I1ZV0UHqptEbpqIUjSkBYBgw0swFm1g2YACxqUWYRwaAxwGXAH9zdzexA4CngJnf/U6ywu78HbDWzU8PsosnAbzq5LZIGSi+VKJSOWhiSBoRwTGAasBh4E3jC3d8wszvM7MKw2INAmZnVATcAsdTUacAxwG1mVhveDgmf+xrwH0AdsAr4bao2SlJD6aXSXkpHzW/mrf30y0FVVVVeU1OT7WoUjbYyivr3D3Z+tQykperqYMygre+O5rbKLDN7xd2rkpZTQJDWlJQk7ioygz17Ml8fyS/6/uSOqAFBU1fIPpKNGyi9VKJo7Xui8YTcpYAge9G4gaSKxhPyjwKC7EXTUkiqaHqL/KMxBNmL+n0lHfS9yi6NIUi7aNxA0knjCflBAUE0biBpp/GE/KCAIBo3kLTTeEJ+0BiCqH9XMkrft8zTGIIkpXEDyYbWvlclJcFNYwrZo4BQpDRuINnS2nhCU1Pw40RjCtmjgFCkNG4g2RI/nmAGpaX7ltGYQnZoDKFIqR9XcoW+i+mnMQRJSOMGkmt0jkLuUEAoIho3kFykcxRyhwJCEdG4geQinaOQOzSGUETUVyu5Tt/R9NAYguzjkEMSL9e4geSK1r6L+o5mhgJCgYsNIpeUwAcf7Pu8xg0kl7Q2nvDOOxpgzgQFhAIWP4jsHtxKS6GsLGiCa9xAck1b4wkaYE4/jSEUsIqKxBlFusi55AN9f1NHYwjCunXtWy6SS/T9zTwFhAKkk8+kEOiEtcxTQCgwOvlMCoVOWMs8BYQCo5PPpFDohLXM06BygdGJPVKI9L3uHA0qFymd2COFSN/rzFBAKBCxgeREYwcaN5B8l2g8wUwnrKWaAkIBaGsgWeMGUggSjSfEupA0wJw6GkMoADqBR4qJvu/tpzGEIqITeKSY6PuePpECgpmNNbO3zKzOzG5K8Hx3M1sQPv8XM6sIl5eZ2RIz225m97d4zdJwnbXhrZW5OCUZDbhJMdH3PX2SBgQzKwUeAM4FBgGXm9mgFsWmAh+5+zHAbOCucPkO4FbgxlZWP9HdK8Nbgrk4pS0aSJZipBlR0ydKC+FkoM7dV7v7TuBxYHyLMuOBeeH9hcAYMzN3/9jd/0gQGCSFNJAsxUozoqZPlIBwOPBu3OP6cFnCMu6+G9gClEVY9y/C7qJbzcwSFTCza8ysxsxqGhoaIqyyOLR2RnJsYE3BQArZxInB9zxRUNAZzB2XzUHlie4+BBgV3iYlKuTuc9y9yt2r+vXrl9EK5jINrIloP0i1LhHKrAeOiHtcHi5LVKbezLoAfYCNba3U3deHf7eZ2aMEXVMPR6x3dNXVwc+Fdevg4IODZZs2pe7+kUfCuHHw9NPpe48E93f7JjYS3C8j7r5vgr65Vddc/18WZF1zvX4pqmuH9oN8/V8eeWQwgJLO5r+7t3kjCBqrgQFAN+B14IQWZa4DfhrenwA80eL5K4H7W6yzb3i/K8G4w1eT1eXEE0/0dpk/371Hj9jFwnTTTTfd8vvWo0dwXGsnoCbZ8dXdo52YZmbjgHuAUuAhd59lZneEb7LIzPYDHgGGA5uACe6+OnztWqB3GEw2A2cD7wDPh8GgFHgOuMHdm9qqR7tPTGstBUdEJF914Ay8qCemFfaZyq1NkSgikq86MMWrzlQGnakiIoUnjce1wg4IbV1ySUQk36T5jNPCDgjxZ7CYQVlZcEvl/f794dpr0/se4X3HaKCMBsrYE97/kGB5rtU11/+XBV/XXK9fGurqGB92Zv/I9f9lBs44jZJ2mt8mTsz7s7RimbPvhIm8vXvDtm2ZyUITyRcGLI7LMneHbt1g1y448gDtK1EUdguhACSaomL3bnjkEZ2RLNJS7AzmRx6Brl1h584gMGhKi2gKO8uoAGjud5H2036zN2UZFQidmi/SftpvOkYBIcdp7neR9tN+0zEKCDlK1zoQ6ThdM6FjFBByUKKB5Njk4LrWgUhyumZCx2hQOQdpQEwkdbQ/aVA5r2lATCR1tD9Fp4CQgzQgJpI62p+iU0DIQd/+9r7LNJAs0jGJBpi7d9f+lIgCQg6JZRZdd13w+KCDMjaFiUjBajmlmRk0NcGkSco4akkBIUckyiz69FNNUSGSCi2ntNi9W1NaJKIsoxyhTAiR9CvW/UxZRnlGmRAi6af9rG0KCDlCmRAi6af9rG0KCDni8sv3XabMIpHUSpRx1LWr9rMYBYQsq64O+i/vvPOzCyQps0gkPVpmHHXpEgwwK+MooICQRbHMolj/pTt88okyi0TSKT7jqEuXYL9TxlFAWUZZVKwZDyK5oJj2P2UZ5QFlPIhkj/a/fSkgZNERRyRerowHkfRTxtG+FBCy6B//cd9lyiwSyYxEGUdduhT3/qeAkAXV1cGvkIcegtJSZRaJZEPLjKPu3ZVxpICQYbHMonffDR43NSmzSCRb4jOOSsKjYTFnHCnLKMOKKbNBJF8U+n6pLKMcpcwGkdyj/TIQKSCY2Vgze8vM6szspgTPdzezBeHzfzGzinB5mZktMbPtZnZ/i9ecaGZ/DV9zn1nsMvKFrbw88fJizmwQyTZlHAWSBgQzKwUeAM4FBgGXm9mgFsWmAh+5+zHAbOCucPkO4FbgxgSr/gnwZWBgeBvbkQ3IN6NG7btMmUUi2ZUo46i0tPj2yygthJOBOndf7e47gceB8S3KjAfmhfcXAmPMzNz9Y3f/I0FgaGZmhwK93f0lDwYxHgYu6syG5LpYZtGjjyqzSCTXtMw42m+/4ryqWpSAcDjwbtzj+nBZwjLuvhvYApQlWWd9knUWDGUWieS++IyjWAd2sWUc5fygspldY2Y1ZlbT0NCQ7ep0yIwZ0Ni497LGxmC5iOSWGTOCH2zximV/jRIQ1gPxkyyUh8sSljGzLkAfYGOSdcYPryZaJwDuPsfdq9y9ql+/fhGqm3uUwSCSP4p5f40SEJYBA81sgJl1AyYAi1qUWQRMCe9fBvzB2zjBwd3fA7aa2alhdtFk4Dftrn2eUGaRSP4o5oyjpAEhHBOYBiwG3gSecPc3zOwOM7swLPYgUGZmdcANQHNqqpmtBX4EXGlm9XEZSl8D/gOoA1YBv03NJuWeM8/cd5kyi0RyUzFnHOlM5TSqrobvfjdoapaWwoEHwqZNwS+NWbM0mCySq6qrgzGDdevggANg2zY4/HDYsCE/91+dqZxlLa+GpswikfwRyzjaswe+//1g2fr1hZ91pBZCmhT63CgixaIQ9mW1ELKsmDMVRApJMe3LCghpoquhiRSGYso6UkBIk0sv3XeZMotE8k+irKNC3ZcVENLAHf70J+jXL/gVoTmLRPJX/DxHEOzP995bmPuyAkKKVVfDP/wDvPxykFn0gx8EmQrKLBLJX7Gso5dfDn7wTZ8eXGGt0Ca+65LtChSSWKppbN6iTZuCx6BgIFII/v73IBBs3hw8jqWgQmHs40o7TaFCSE8Tkdbl6z6utNMsKKb0NJFiVOj7uAJCCh16aOLlhZieJlKMCj0FVQEhhY49dt9lhZqeJlKMCj0FVQEhBaqrgymuly6F7t11eUyRQtUyBRWgS5fCudSmAkInxTKL1oeX9/n0U01iJ1LIYimoc+cGj7duLZxJ75Rl1En5mnUgIp2TT/u+sowypNCzDkQksULc9xUQOkmT2IkUp0LMOFJA6KRzz913WSFlHYhIYoWYcaSA0Anu8OKLQYaRJrETKS6JJr2bPTu/930FhA6org4GlEpL4a9/hXHjgsElTWInUlxiGUe1tcEPxO98J78nvVNAaKdYmuk77wRfAID58/PzwxeR1Fix4rNJ7/I5BVVpp+2UT6lmIpIZuX5cUNppmhRiqpmIdE6hHBcUENqpEFPNRKRzCuW4oIDQTrNmQdeuey/L91QzEemcQklBVUBop0sugW7dYP/9lWYqIoFEk97NnJl/xwUFhIhiqaY9esDHH8MNNyjNVEQ+E0tB/eCDICX9jjvyLwVVASGC+FTTmNmz8+dDFpHMefbZ4O/27fmXgqq00whyPaVMRHJHLh4vlHaaQoWSUiYi6ZfPxwsFhAgKJaVMRNIvn48XkQKCmY01s7fMrM7MbkrwfHczWxA+/xczq4h77uZw+Vtmdk7c8rVm9lczqzWz3LrqTQuzZgWXyYuXjyllIpJ++ZyCmjQgmFkp8ABwLjAIuNzMBrUoNhX4yN2PAWYDd4WvHQRMAE4AxgI/DtcXM9rdK6P0bWXTuHFBimnPnko1FZG2JUpB/fa38+N4EaWFcDJQ5+6r3X0n8DgwvkWZ8cC88P5CYIyZWbj8cXf/1N3XAHXh+vJCLNX04INh1y747neVaioiycVSULduhf32gx/+MD9SUKMEhMOBd+Me14fLEpZx993AFqAsyWsdeNbMXjGza1p7czO7xsxqzKymoaEhQnVTI1Gq6axZuf1hikhuWbQIdu+Gxsb8SEHN5qDy/3X3EQRdUdeZ2RcSFXL3Oe5e5e5V/fr1y1jlZswIPsR4jY3BchGRKGbMCAJCvFw+jkQJCOuB+CsHl4fLEpYxsy5AH2BjW69199jfD4Bfk2NdSfmcOiYiuSHfjiNRAsIyYKCZDTCzbgSDxItalFkETAnvXwb8wYMz3hYBE8IspAHAQOBlM+tpZr0AzKwncDawovObkzr5nDomIrkh344jSQNCOCYwDVgMvAk84e5vmNkdZnZhWOxBoMzM6oAbgJvC174BPAGsBJ4BrnP3JuD/AH80s9eBl4Gn3P2Z1G5a5yjVVEQ6K99SUDV1RSu2bIFDDgmmum5sDCL6rFnKLhKR9qmuDsYMYgkqd9wBt96a2Tpo6ooOiqWaHngg7NwJN9+sVFMR6bhYCuqWLdC9O9x1V+6moCogxEmUavqDH+TehyYi+ee//guamoLp83M1BVVdRnFycZZCESkM2Ty+qMuoA/ItRUxE8kc+HF8UEOLkW4qYiOSPfDi+KCDEUaqpiKRLPqSgdklepHhcdhl89avBwM+OHUo1jWLXrl3U19ezY8eObFdFsmy//fajvLycrl27ZrsqOSl2HGmZgppLxxcFhDgLFwbXQX32WTjrrGzXJj/U19fTq1cvKioqCCa4lWLk7mzcuJH6+noGDBiQ7erkrIkTg9t77wU/ODdsyHaN9qYuIz479+CKK4Iuo/ffz3aN8seOHTsoKytTMChyZkZZWZlaihEdeiiceCLMnp1b5yQUfQshdu5BbGbT3bvhK18JLoSTS025XKZgIKDvQXtUV0NtbXA+Anx2TgJk97hT9C0ETXOd/8yMK664ovnx7t276devH+effz4Ac+fOZdq0afu8rqKigiFDhlBZWUllZSXXX3/9PmVmzpzJ4Ycf3lymsrKSzZs3J6zH5s2b+fGPf9z8eMOGDVx22WWd3TwAnnzySVauXJmSdUn2zZgBn36697JcOO4UfUDIh9zgQhLrnktlM7lnz56sWLGCTz75BIDf/e53HH54y2s4JbZkyRJqa2upra3lvvvuS1jmm9/8ZnOZ2tpaDjzwwITlWgaEww47jIULF7ZzaxLrSEDY3XIifskZuXrcKfqAkA+5wYUifmqQVJ+6P27cOJ566ikAHnvsMS6//PLOr7QNb7zxBieffDKVlZUMHTqUt99+m5tuuolVq1ZRWVnJ9OnTWbt2LYMHDwaCVspFF13EWWedRUVFBffffz8/+tGPGD58OKeeeiqbNm0C4Oc//zknnXQSw4YN49JLL6WxsZEXX3yRRYsWMX36dCorK1m1ahW1tbWceuqpDB06lIsvvpiPPvoIgDPOOINvfOMbVFVVce+996b1fyAdl6vHnaIPCLNmBeMF8XItNzhffOMbcMYZrd+mTk3cPTd1auuv+cY3or33hAkTePzxx9mxYwfLly/nlFNOifS60aNHN3cFzZ49O2GZ2bNnN5cZPXo0AD/96U/5+te/Tm1tLTU1NZSXl3PnnXdy9NFHU1tby913373PelasWMGvfvUrli1bxowZM+jRowevvfYap512Gg8//DAAl1xyCcuWLeP111/n+OOP58EHH+Tzn/88F154IXfffTe1tbUcffTRTJ48mbvuuovly5czZMgQ/vVf/7X5fXbu3ElNTQ3f+ta3ov3zJOMSnZOw//7ZP+4U/aDy0UcHv1YPPhg++kjnHqRTyz7TZMvbY+jQoaxdu5bHHnuMcePGRX7dkiVL6Nu3b5tlvvnNb3LjjTfutey0005j1qxZ1NfXc8kllzBw4MCk7zV69Gh69epFr1696NOnDxdccAEAQ4YMYfny5UAQNG655RY2b97M9u3bOeecc/ZZz5YtW9i8eTOnn346AFOmTOGf/umfmp//4he/mLQukl3x5ySsWxccg/75n7N/3CnagBA/R7kZ/PCHwS9V6bh77mn7+bYm91q6tPPvf+GFF3LjjTeydOlSNm7c2PkVtuFf/uVfOOWUU3jqqacYN24cP/vZzzjqqKPafE337t2b75eUlDQ/Likpae7vv/LKK3nyyScZNmwYc+fOZWkH/jE9e/Zs92sk82LnJECwbzz6KDz8cHZ/lBZll1HLaa7d4frrcyMPuJCl+9T9q666ittvv50hQ4akZoVtWL16NUcddRTXX38948ePZ/ny5fTq1Ytt27Z1ar3btm3j0EMPZdeuXVTHfSHj192nTx8OOuggXnjhBQAeeeSR5taC5J/q6uBEtV27sj8tdlEGBKWaZsfEiTBnTtAiMAv+zpmTul9C5eXlCVNHIRjULS8vb77V19cDe48hTJ48OeFr48cQKisrWbt2LU888QSDBw+msrKSFStWMHnyZMrKyhg5ciSDBw9m+vTpHdqG733ve5xyyimMHDmS4447rnn5hAkTuPvuuxk+fDirVq1i3rx5TJ8+naFDh1JbW8ttt93WofeT7JsxI7gYV7xsHY+K8noIJSWfnRASzyy4OppE9+abb3L88cdnuxqSI/R9aL9MHI90PYQ25GrKl4gUn1w6HhVlQJg1C0pL916mVFMRyYZcmha7KAPCuHFBc+yAA9LTly0iElX82FrM9OnZOR4VZdrp/PnBJHbPPw/Dh2e7NiJS7GIpqNu2wWGHJU7PzoSiaiFUVwdR+PrroVs30FxhIpJLevWCk06CefOyMy120bQQWk5zvXNnbkw3KyISU10Nf/5z9qbFLpoWgs49KFylpaVUVlYybNgwRowYwYsvvpiR97366qtTMiX10qVL6dOnz17nOjz33HOtlr/nnntojPsyjxs3rtUpudujtraWp59+utPrkY6bMSO4fG+8jB6n3D1vbieeeKJ3lJl7EHf3vpl1eJXi7itXrmzfC+bPd+/fP/jH9+8fPO6knj17Nt9/5pln/Atf+EKn15lJS5Ys8fPOOy9y+f79+3tDQ0PK6/GLX/zCr7vuuna9ZteuXXs9bvf3QfaSruMUUOMRjrFF00LIpVzfopXO+a9DW7du5aCDDgJg+/btjBkzhhEjRjBkyBB+85vfAHDbbbdxT9zESzNmzGieKvruu+/mpJNOYujQodx+++0AfPzxx5x33nkMGzaMwYMHs2DBAiCYajp2ouS1115LVVUVJ5xwQvPrILgIz+23395ch7/97W+RtyXR+953331s2LCB0aNHN8+8WlFRwYcffsjatWs57rjjuPLKKzn22GOZOHEizz33HCNHjmTgwIG8/PLLALz88sucdtppDB8+nM9//vO89dZb7Ny5k9tuu40FCxZQWVnJggUL2LRpExdddBFDhw7l1FNPbZ6Ab+bMmUyaNImRI0cyadKk9n9I0qqsH6eiRI1cuXWmhTB/vntJyd5Rt0ePlPxALWp7/SL8+tfdTz+99Vv37ol//nTv3vprvv71pHUoKSnxYcOG+ec+9znv3bu319TUuHvw63XLli3u7t7Q0OBHH32079mzx9esWePDhw93d/empiY/6qij/MMPP/TFixf7l7/8Zd+zZ483NTX5eeed5//zP//jCxcu9Kuvvrr5/TZv3uzu7qeffrovW7bM3d03btzo7u67d+/2008/3V9//XV3D37N33fffe7u/sADD/jUqVP3qf+SJUu8d+/ePmzYsOZbXV1dq+/bsoUQe7xmzRovLS315cuXe1NTk48YMcK/9KUv+Z49e/zJJ5/08ePHu7v7li1bmn/Z/+53v/NLLrnE3fdtIUybNs1nzpzp7u6///3vfdiwYe7ufvvtt/uIESO8sbFxn21RC6Fz5s8Pjkvxu8f++3f+OEXEFkLRDCoPHRqcBn7QQbB5s6a5zoo0zX+9//77U1tbC8Cf//xnJk+ezIoVK3B3vvvd7/L8889TUlLC+vXref/996moqKCsrIzXXnuN999/n+HDh1NWVsazzz7Ls88+y/AwF3n79u28/fbbjBo1im9961t85zvf4fzzz2fUqFH71OGJJ55gzpw57N69m/fee4+VK1cLwukVAAAI3ElEQVQydOhQILjGAcCJJ57Ir371q4TbMGrUKP77v/97r2VNTU1J37elAQMGNE/ud8IJJzBmzBjMjCFDhrB27VogmD57ypQpvP3225gZu3btSriuP/7xj/znf/4nAGeeeSYbN25k69atQDCz7P7775+0PtI+iabFnjQpc8epSAHBzMYC9wKlwH+4+50tnu8OPAycCGwEvujua8PnbgamAk3A9e6+OMo6U+3BB6FrV/j73yHJ9PfSUdme/5rgOgUffvghDQ0NPP300zQ0NPDKK6/QtWtXKioq2BGO2F199dXMnTuX//3f/+Wqq64CgtbyzTffzFe+8pV91vvqq6/y9NNPc8sttzBmzJi9JpNbs2YN//Zv/8ayZcs46KCDuPLKK5vfBz6b9rq0tLRdl7U89thj23zfRKJMsX3rrbcyevRofv3rX7N27VrOOOOMyHWK0RTb6RM7J8EdPvc5ePPNzL130jEEMysFHgDOBQYBl5vZoBbFpgIfufsxwGzgrvC1g4AJwAnAWODHZlYacZ0pETv34N57g4CweHE63kUiycA5+n/7299oamqirKyMLVu2cMghh9C1a1eWLFnCO3HB6OKLL+aZZ55h2bJlzRehOeecc3jooYfYvn07AOvXr+eDDz5gw4YN9OjRgyuuuILp06fz6quv7vWeW7dupWfPnvTp04f333+f3/72tynZltbet7PTbG/ZsqX5mtNz585tXt5yvaNGjWqegnvp0qX07duX3r17d/h9pX3MYMQIeOGFzJ2TEKWFcDJQ5+6rAczscWA8EJ9vNx6YGd5fCNxvZhYuf9zdPwXWmFlduD4irLPTWp570Niocw+yqmV7OEX9dp988gmVlZVA8Ct/3rx5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
+"/>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <p>
+    This is where things get confusing.
+    <strong>
+     Which estimator is better? It depends
+    </strong>
+    . It depends on the true value of the parameter. If the true value of $\theta$ is 0.1, the MLE estimator is better. If $\theta$ is 0.5 (i.e. fair coin), then the Bayesian estimator is better. But we have no idea,what the true value of $\theta$ is. If we already knew whether the coin is fair, or had 10% chance of falling heads, we wouldn't be trying to estimate it. Therefore, our decision on which is a good estimator, depends on the quantity we are trying to estimate.
+    <strong>
+     This is the basic issue that we are trying to solve with minimax estimators
+    </strong>
+    .
+   </p>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <h2 id="Minimax-Estimators">
+    Minimax Estimators
+    <a class="anchor-link" href="#Minimax-Estimators">
+     ¶
+    </a>
+   </h2>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <p>
+    One solution to this problem is the minimax estimator. Since the risk is a function of the true value, we need one single number. The minimax approach tries to find an estimator that minimizes the maximum risk. 
+$$R_n = inf_{\hat{\theta}} sup_{\theta} R(\theta, \hat{\theta})$$
+   </p>
+   <p>
+    What does this mean? It means, lets look at each estimator (For example, we looked at two of them $\theta_1$ and $\theta_2$), and for each of estimator, we want to find the maximum risk for each estimator. For example, we have
+   </p>
+   $$max-risk(\theta_1) = \frac{1}{4N}$$
+   <p>
+    and 
+$$max-risk(\theta_2) = \frac{N}{4(N + \sqrt{N})^2}$$
+   </p>
+   <p>
+    <strong>
+     Now, the minimax estimator is the one, for which the max-risk is the minimum
+    </strong>
+    . Here we compared these two estimators, and $\theta_2$ has the lower maximum risk.Is that the minimax estimator? For that to happen, it must have a minimum of maximum risk of all possible estimators. That seems like a daunting task and it is.
+   </p>
+   <p>
+    We have merely defined what minimax estimators are. Finding one is much harder, and beyond our scope.
+   </p>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <h2 id="So,-did-we-find-the-minimax-estimator?">
+    So, did we find the minimax estimator?
+    <a class="anchor-link" href="#So,-did-we-find-the-minimax-estimator?">
+     ¶
+    </a>
+   </h2>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+ <div class="prompt input_prompt">
+ </div>
+ <div class="inner_cell">
+  <div class="text_cell_render border-box-sizing rendered_html">
+   <p>
+    Although in general, it is hard to find the minimax estimator, in this case, we did. To prove this, we need to develop a little more mathematical machinery. First, we will define Bayes risk. In the Bayesian paradigm, the parameter is not fixed, but has a distribution. Minimax seems to be too rigid, optimizing for the worst case. What if instead we took an expectation of the risk over the distribution of the parameter? That seems like a more reasonable approach. On an average we will end up choosing the better estimator.
+This is the approach of the Bayes estimator. If $\pi(\theta)$ is the prior distribution of the parameter,then we define the bayes risk as
+$$B_\pi(\hat{\theta}) = \int R(\theta, \hat{\theta}) \pi(\theta) d\theta $$
+The estimator that minimizes the Bayes risk is called the Bayes estimator.
+   </p>
+   <p>
+    However, we do not wish to go into the topic of Bayes estimators in this post. We invoked the idea in order to prove an important result. The result is simply that
+    <strong>
+     Bayes estimators with an constant risk function are minimax estimators
+    </strong>
+    . Remember we set $\alpha$ and $\beta$ cleverly, in order to make the risk independent of the parameter! This is the reason we did that.
+   </p>
+   <p>
+    One result we will omit, for the sake of brevity, is that, the Bayes estimator, when the risk function is squared loss, is the posterior mean. Thus we have assembled all the machinery. $\theta_2$ is a Bayes estimator, since it is the posterior mean, and it also has a constant risk. Hence, it is minimax.
+   </p>
+   <p>
+    Now, lets prove the last statement. To do so, we first claim that if for a given prior, $R(\theta, \hat{\theta}) \leq B_\pi(\hat{\theta})$ then $\hat{\theta}$ is minimax. The proof is by contradiction. Assume that $\hat{\theta}$ is not minimax, and there exists a $\theta_0$ which is minimax. This implies that $sup_\theta R(\theta, \theta_0) &gt; sup_\theta R(\theta, \hat{\theta})$.But since the average of a function is less than the maximum, therefore, $B_\pi(\theta_0) &lt; sup_\theta R(\theta, \theta_0)$. Therefore, 
+$$B_\pi(\theta_0) \leq  sup_\theta R(\theta, \theta_0) \leq sup_\theta R(\theta, \hat{\theta}) \leq B_\pi(\hat{\theta})$$
+But this is a contradiction, because $\hat{\theta}$ is a Bayes estimator, it is the one that minimizes the Bayes risk. Hence it is not possible that $B_\pi(\theta_0) &lt; B_\pi(\hat{\theta})$. Hence, the Bayes estimator mut be minimax in this case.
+If the risk $R(\theta, \hat{\theta})$is constant, this condition is trivially satisfied since $B_\pi(\hat{\theta}) = \int R(\theta, \hat{\theta}) d\pi =\int R(\theta, \hat{\theta}) d\pi = R(\theta, \hat{\theta}) $. Hence, we have shown that the bayes estimator with constant risk is a minimax estimator, and since $\theta_2$ satisfies these conditions, we can claim it is minimax.
+   </p>
+  </div>
+ </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+ <div class="input">
+  <div class="prompt input_prompt">
+   In [ ]:
+  </div>
+  <div class="inner_cell">
+   <div class="input_area">
+    <div class="collapse_expand_button fa fa-1x fa-minus-square-o">
+    </div>
+    <div class="highlight hl-ipython3">
+     <pre><span></span> 
+</pre>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
