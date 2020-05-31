@@ -22,3 +22,5 @@ src="https://c.statcounter.com/10783652/0/24aa9956/1/"
 alt="Web Analytics Made Easy -
 StatCounter"></a></div></noscript>
 <!-- End of Statcounter Code -->
+
+<script src="https://www.w3counter.com/tracker.js?id=132447"></script>
